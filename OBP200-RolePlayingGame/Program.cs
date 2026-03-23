@@ -13,7 +13,7 @@ class Program
 
     // Rum: [type, label]
     // types: battle, treasure, shop, rest, boss
-    static List<string[]> Rooms = new List<string[]>();
+    static List<Room> Rooms = new List<Room>();
 
     // Fiendemallar: [type, name, HP, ATK, DEF, XPReward, GoldReward]
     static List<string[]> EnemyTemplates = new List<string[]>();
@@ -98,6 +98,7 @@ class Program
                 maxhp = 40; hp = 40; atk = 7; def = 5; potions = 2; gold = 15;
                 break;
         }
+        
 
         // Fyll player-array
         Player[0] = name;
@@ -114,13 +115,10 @@ class Program
 
         // Initiera karta (linjärt äventyr)
         Rooms.Clear();
-        Rooms.Add(new[] { "battle", "Skogsstig" });
-        Rooms.Add(new[] { "treasure", "Gammal kista" });
-        Rooms.Add(new[] { "shop", "Vandrande köpman" });
-        Rooms.Add(new[] { "battle", "Grottans mynning" });
-        Rooms.Add(new[] { "rest", "Lägereld" });
-        Rooms.Add(new[] { "battle", "Grottans djup" });
-        Rooms.Add(new[] { "boss", "Urdraken" });
+        Rooms.Add(new BattleRoom("Skogsstig"));
+        Rooms.Add(new BattleRoom ("Grottans mynning"));
+        Rooms.Add(new BattleRoom ("Grottans djup"));
+        Rooms.Add(new BattleRoom ("Urdraken"));
 
         CurrentRoomIndex = 0;
 
@@ -133,9 +131,9 @@ class Program
         while (true)
         {
             var room = Rooms[CurrentRoomIndex];
-            Console.WriteLine($"--- Rum {CurrentRoomIndex + 1}/{Rooms.Count}: {room[1]} ({room[0]}) ---");
+            Console.WriteLine($"--- Rum {CurrentRoomIndex + 1}/{Rooms.Count}: {room.Label} ---");
 
-            bool continueAdventure = EnterRoom(room[0]);
+            bool continueAdventure = room.Enter();
             
             if (IsPlayerDead())
             {
@@ -197,7 +195,7 @@ class Program
 
     // ======= Strid =======
 
-    static bool DoBattle(bool isBoss)
+    public static bool DoBattle(bool isBoss)
     {
         var enemy = GenerateEnemy(isBoss);
         Console.WriteLine($"En {enemy[1]} dyker upp! (HP {enemy[2]}, ATK {enemy[3]}, DEF {enemy[4]})");
