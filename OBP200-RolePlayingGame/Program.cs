@@ -6,7 +6,7 @@ namespace OBP200_RolePlayingGame;
 class Program
 {
     // ======= Globalt tillstånd  =======
-
+ 
     // Spelarens "databas": alla värden som strängar
     // index: 0 Name, 1 Class, 2 HP, 3 MaxHP, 4 ATK, 5 DEF, 6 GOLD, 7 XP, 8 LEVEL, 9 POTIONS, 10 INVENTORY (semicolon-sep)
     static string[] Player = new string[11];
@@ -116,9 +116,13 @@ class Program
         // Initiera karta (linjärt äventyr)
         Rooms.Clear();
         Rooms.Add(new BattleRoom("Skogsstig"));
+        Rooms.Add(new TreasureRoom ("Gammal kista"));
+        Rooms.Add(new ShopRoom ("Vandrande köpman"));
         Rooms.Add(new BattleRoom ("Grottans mynning"));
-        Rooms.Add(new BattleRoom ("Grottans djup"));
-        Rooms.Add(new BattleRoom ("Urdraken"));
+        Rooms.Add(new RestRoom("Lägereld"));
+        Rooms.Add(new BattleRoom("Grottans djup")); 
+        Rooms.Add(new BattleRoom("Urdraken", true));
+        
 
         CurrentRoomIndex = 0;
 
@@ -173,25 +177,7 @@ class Program
 
     // ======= Rumshantering =======
 
-    static bool EnterRoom(string type)
-    {
-        switch ((type ?? "battle").Trim())
-        {
-            case "battle":
-                return DoBattle(isBoss: false);
-            case "boss":
-                return DoBattle(isBoss: true);
-            case "treasure":
-                return DoTreasure();
-            case "shop":
-                return DoShop();
-            case "rest":
-                return DoRest();
-            default:
-                Console.WriteLine("Du vandrar vidare...");
-                return true;
-        }
-    }
+   
 
     // ======= Strid =======
 
@@ -521,7 +507,7 @@ class Program
 
     // ======= Rumshändelser =======
 
-    static bool DoTreasure()
+    public static bool DoTreasure()
     {
         Console.WriteLine("Du hittar en gammal kista...");
         if (Rng.NextDouble() < 0.5)
@@ -541,7 +527,7 @@ class Program
         return true;
     }
 
-    static bool DoShop()
+    public static bool DoShop()
     {
         Console.WriteLine("En vandrande köpman erbjuder sina varor:");
         while (true)
@@ -623,7 +609,7 @@ class Program
         Console.WriteLine($"Du säljer {count} st Minor Gem för {count * 5} guld.");
     }
 
-    static bool DoRest()
+    public static bool DoRest()
     {
         Console.WriteLine("Du slår läger och vilar.");
         int maxhp = ParseInt(Player[3], 1);
